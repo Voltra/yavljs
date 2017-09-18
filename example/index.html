@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr-FR">
+    <head>
+        <!--@@ PAGE INFO @@-->
+        <meta charset="utf-8" data-whatIdo="Adapter le jeu de caractère au maximum"/>
+        <meta lang="fr"/>
+        <meta name="author" content="Voltra - Ludwig GUERIN"/>
+        <title></title>
+        <meta name="keywords" content="" data-whatIdo="Mots-clés"/>
+        
+        <!--@@ IMPORTANT META @@-->
+        <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, shrink-to-fit=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0" data-whatIdo="Adaptation à tous les supports"/>
+        
+        <!--@@ STYLESHEETS @@-->
+        <link rel="stylesheet" href="css/reset.css" data-whatIdo="Élimination des styles par défaut du navigateur"/>
+        <link rel="stylesheet" href="css/clear_float.css" data-whatIdo="Styles pour élément rétablissant le flot"/>
+        <link rel="stylesheet" href="css/font_loader.css" data-whatIdo="Préparation des polices de caractères"/>
+        
+        <link rel="stylesheet" href="css/main.css"/>
+        
+        <!--@@ REGULAR SCRIPTS @@-->
+        <script src="node_modules/jquery/dist/jquery.min.js" data-whatIdo="Facilite l'utilisation de JS"></script>
+        <script src="node_modules/fetch_json/fetchJSON.js"></script>
+        
+        <!--@@ CUSTOM SCRIPTS @@-->
+        <script src="../yavl.js"></script>
+        
+        <script src="validate.js"></script>
+        
+    </head>
+    
+    <body>
+        <form id="form" action="submitted.html" method="GET">
+            <label for="nom">Nom: </label>
+            <input name="nom" type="text" value="" placeholder="Votre nom"/>
+            <p class="form-error"></p>
+            <br/>
+            
+            <label for="prenom">Prénom: </label>
+            <input name="prenom" type="text" value="" placeholder="Votre prénom"/>
+            <p class="form-error"></p>
+            <br/>
+            
+            <label for="age">Âge: </label>
+            <input name="age" type="number" value="" placeholder="0-127"/>
+            <p class="form-error"></p>
+            <br/>
+            
+            <label for="age2">Âge 2: </label>
+            <input name="age2" type="number" value="" placeholder="0-127"/>
+            <p class="form-error"></p>
+            <br/>
+            
+            <label for="email">E-mail: </label>
+            <input name="email" type="text" value="" placeholder="Votre adresse e-mail"/>
+            <p class="form-error"></p>
+            <br/>
+            
+            <button type="submit">submit dat shit boi</button>
+        </form>
+    </body>
+</html>

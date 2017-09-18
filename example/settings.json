@@ -1,0 +1,48 @@
+{
+    "form": "#form",
+    "fields": {
+        "nom": {
+            "type": "string",
+            "required": "true",
+            "selector": "[name='nom']",
+            "error_selector": "[name='nom'] + p.form-error"
+        },
+        "prenom": {
+            "type": "string",
+            "required": "true",
+            "rules": {
+                "minLength": "3"
+            },
+            "selector": "[name='prenom']",
+            "error_selector": "[name='prenom'] + p.form-error"
+        },
+        "age": {
+            "type": "int",
+            "required": "true",
+            "rules": {
+                "min": "0",
+                "max": "127"
+            },
+            "selector": "[name='age']",
+            "error_selector": "[name='age'] + p.form-error"
+        },
+        "age2": {
+            "type": "int",
+            "required": "true",
+            "rules": {
+                "match": "age"
+            },
+            "selector": "[name='age2']",
+            "error_selector": "[name='age2'] + p.form-error"
+        },
+        "email": {
+            "type": "string",
+            "required": "true",
+            "rules": {
+                "regex": "^[^@]+@.+\\.\\w{2,6}$"
+            },
+            "selector": "[name='email']",
+            "error_selector": "[name='email'] + p.form-error"
+        }
+    }
+}

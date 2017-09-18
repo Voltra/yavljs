@@ -1,0 +1,68 @@
+/**@@ Position and sizing @@**/
+
+:root{}
+
+body{
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    
+    overflow: hidden;
+    /*overflow-y: auto;*/
+    
+    word-wrap: break-word;
+}
+
+body *{
+    box-sizing: border-box;
+    font-family: Roboto;
+}
+
+#form{
+    width: auto;
+    margin: 0 auto;
+}
+
+#form input{
+    display: block;
+    width: 90%;
+    height: 5vh;
+    margin-bottom: 1vh;
+}
+
+#form {
+	margin-left: calc((100% - 85%) / 2);
+}
+
+#form label{
+    display: block;
+    margin-bottom: 1vh;
+}
+
+
+/**@@ Coloring and styling @@**/
+:root{
+    --white: #e9ebee;
+    --blue: #3b5998;
+    --error: #891f1f;
+    
+    --input-shadow: 0 0 0.2vh 0 rgba(0,0,0, 0.35);
+    --input-borderRadius: 1.5vmin;
+}
+
+body{
+    background-color: var(--white);
+}
+
+#form p.form-error{
+    color: var(--error);
+}
+
+#form input{
+    border: none;
+    border-radius: var(--input-borderRadius);
+    
+    box-shadow: var(--input-shadow);
+    
+    padding-left: var(--input-borderRadius);
+}

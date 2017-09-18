@@ -1,0 +1,28 @@
+{
+  "name": "yavljs",
+  "version": "1.0.0",
+  "description": "yet another validation library in javascript",
+  "main": "yavl.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voltra/yavljs.git"
+  },
+  "keywords": [
+    "validation",
+    "form",
+    "vanilla",
+    "javascript"
+  ],
+  "author": "Voltra",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Voltra/yavljs/issues"
+  },
+  "homepage": "https://github.com/Voltra/yavljs#readme"
+}

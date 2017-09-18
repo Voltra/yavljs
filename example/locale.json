@@ -1,0 +1,10 @@
+{
+    "NaN": "Format non valide (NaN).",
+    "required": "Ce champs est requis.",
+    "min": "Doit être &ge; %value%.",
+    "max": "Doit être &le; %value%.",
+    "nomatch_regex": "Format invalide.",
+    "minLength": "Un minimum de %value% caractères est requis.",
+    "maxLength": "Un maximum de %value% caractères est attendu.",
+    "notEqual": "Les mots de passes ne sont pas identiques."
+}
