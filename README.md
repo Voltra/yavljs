@@ -8,7 +8,7 @@
 
 I especially put effort in it to discourage users from hardcoding their form validation settings. I highly recommend the use of [JSON](https://en.wikipedia.org/wiki/JSON) configuration files (both for locale and settings) which makes it easier for you to read, have access to and debug (required structure patterns will be shown below).
 
-Another goal of this library is being able to be used by anyone without any kind of dependencies (a decent version of your browser should do the trick).
+Another goal of this library is to be able to be used by anyone without any kind of dependencies (a decent version of your browser should do the trick).
 This also means that dependency injection is highly recommended.
 
 # What do I need to use this library ?
@@ -53,7 +53,7 @@ Just like you declare the form's constraints, you will replace the messages your
 ```javascript
 {
     "NaN": "That should be a number, I guess. Sadly, it isn't one.",
-    "required": "Hey did you think you could get passed me ?",
+    "required": "Hey did you think you could get past me ?",
     "min": "That should be &ge; %value%.",
     "max": "That should be &le; %value%.",
     "nomatch_regex": "Format invalide.",
@@ -174,7 +174,7 @@ invalidate:: (event, error's selector, error message) -> void
 Extending `yavl` is fairly simple : I added a simple and straightforward plugin system.
 
 Using `yavl.registerRule(name, function)` you can add a new rule to the list of plugin rules.
-Usinf `yavl.removeRule(name, function)` you can remove a rule from the list of plugin rules.
+Using `yavl.removeRule(name, function)` you can remove a rule from the list of plugin rules.
 *warning: * Be aware that you might override someone else's rule !
 
 Internally, core rules have a higher priority than any of the plugins's rules.
