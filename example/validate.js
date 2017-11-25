@@ -23,4 +23,5 @@ function validate(error_selector){
 function invalidate(event, error_selector, error_message){
     event.preventDefault();
     document.querySelector(error_selector).innerHTML = error_message;
+    return true;
 }

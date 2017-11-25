@@ -51,12 +51,13 @@
             this.setInvalidationFunction((event, es, msg)=>{
                 event.preventDefault();
                 document.querySelector(es).innerHTML = msg;
+                return true;
             });
     }
     /**@@ Core Functioning @@**/
 
     //validate: (error_selector) -> void
-    //invalidate: (event, error_selector, err_msg) -> void
+    //invalidate: (event, error_selector, err_msg) -> true
     //
     //rule:: (errorMsgDB, validate, invalidate, event, error_sel, value, expected?, fieldsObj?) -> true/false
 
@@ -103,7 +104,7 @@
                                           .map( key=>key.replace(`${yavl.pluginBaseName}`, "") );
 
                     /*for(let rule in rules)*/
-                    Object.keys(rules).forEach((rule)=>{
+                    Object.keys(rules).some((rule)=>{
                         if(coreRules.includes(rule))
                             return this[`${yavl.coreBaseName}${rule}`](
                                 this.locale,
@@ -135,7 +136,7 @@
     /**@@ Helpers @@**/
 
     //validate: (error_selector) -> void
-    //invalidate: (event, error_selector, err_msg) -> void
+    //invalidate: (event, error_selector, err_msg) -> true
 
     Object.defineProperty(yavl, "coreBaseName", {
         value: "yavl_validate_",
@@ -216,7 +217,7 @@
 
     //rule:: (errorMsgDB, validate, invalidate, event, error_sel, value, expected?, fieldsObj?) -> true/false
     //validate:: (error_selector) -> void
-    //invalidate:: (event, error_selector, error_message) -> void
+    //invalidate:: (event, error_selector, error_message) -> true
 
     /**Rule to satisfy a minimum
     *
@@ -234,7 +235,7 @@
         if(val >= ex)
             validate(es);
         else
-            invalidate(event, es, errorMsgDB["min"].replace("%value%", `${ex}`));
+            return invalidate(event, es, errorMsgDB["min"].replace("%value%", `${ex}`));
     }
 
     /**Rule to satisfy a maximum
@@ -253,7 +254,7 @@
         if(val <= ex)
             validate(es);
         else
-            invalidate(event, es, errorMsgDB["max"].replace("%value%", `${ex}`));
+            return invalidate(event, es, errorMsgDB["max"].replace("%value%", `${ex}`));
     }
 
     /**Rule to match a specified regex
@@ -272,7 +273,7 @@
         if(RegExp(ex).exec(`${val}`))
             validate(es);
         else
-            invalidate(event, es, errorMsgDB["nomatch_regex"].replace("%value%", `${ex}`));
+            return invalidate(event, es, errorMsgDB["nomatch_regex"].replace("%value%", `${ex}`));
     }
 
     /**Rule to satisfy a minimum amount of character
@@ -291,7 +292,7 @@
         if(`${val}`.length >= parseInt(ex))
             validate(es);
         else
-            invalidate(event, es, errorMsgDB["minLength"].replace("%value%", `${ex}`));
+            return invalidate(event, es, errorMsgDB["minLength"].replace("%value%", `${ex}`));
     }
 
     /**Rule to satisfy a minimum amount of character
@@ -310,7 +311,7 @@
         if(`${val}`.length <= parseInt(ex))
             validate(es);
         else
-            invalidate(event, es, errorMsgDB["maxLength"].replace("%value%", `${ex}`));
+            return invalidate(event, es, errorMsgDB["maxLength"].replace("%value%", `${ex}`));
     }
 
     /**Rule to match the value of another field
@@ -330,7 +331,7 @@
         const otherNodeValue = document.querySelector(fields[ex].selector).value;
 
         if(otherNodeValue !== `${val}`)
-            invalidate(event, es, errorMsgDB["notEqual"].replace("%value%", `${ex}`));
+            return invalidate(event, es, errorMsgDB["notEqual"].replace("%value%", `${ex}`));
         else
             validate(es);
     }

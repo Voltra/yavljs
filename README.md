@@ -167,8 +167,9 @@ new yavl(
 Validation and "invalidation" functions are defined as the following:
 ```
 validate:: (error's selector) -> void
-invalidate:: (event, error's selector, error message) -> void
+invalidate:: (event, error's selector, error message) -> true
 ```
+Since yavl uses `Array.prototype.some`, you need to return true to interrupt the rules browsing when it encounters an error.
 
 ## Extending yavl with custom rules
 Extending `yavl` is fairly simple : I added a simple and straightforward plugin system.
