@@ -204,3 +204,7 @@ This part is subject to change, but right now `yavl` provides these rules:
 - (as string) minLength (as string)
 - (as string) maxLength (as string)
 - (as string) match (another field's name from the config file)
+
+# Changes
+## V2.0.0
+Most of the library has been rewritten in ES5 so that everyone can access it easily

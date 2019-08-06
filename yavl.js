@@ -1,8 +1,8 @@
 (function UniversalModuleDefinition(root, factory){
-	if(typeof exports === 'object' && typeof module === 'object')
+	if(typeof module === 'object')
         module.exports = factory();
     else{
-		const module_name = "yavl";
+		var module_name = "yavl";
 		if(typeof define === 'function' && define.amd)
 			define(module_name, [], factory);
 		else
@@ -12,10 +12,21 @@
 				root[module_name] = factory();
 	}
 })(this, function(){
+    if(!("some" in Array.prototype)){
+        Array.prototype.some = function(predicate){
+            for(var i = 0 ; i < this.length ; ++i){
+                if(predicate(this[i]))
+                    return true;
+            }
+            
+            return false;
+        };
+    }
+    
     /**Yet Another Validation Library
     *@class yavl
     */
-    const yavl = function(formSelector, fields={}, localeObj={}, validate, invalidate){
+    var yavl = function(formSelector, fields={}, localeObj={}, validate, invalidate){
         Object.defineProperty(this, "locale", {
             value: Object.assign({
                 "NaN": "Invalid format (NaN)",
@@ -40,7 +51,7 @@
         if(typeof validate == "function")
             this.setValidationFunction(validate);
         else
-            this.setValidationFunction(es=>{
+            this.setValidationFunction(function(es){
                 document.querySelector(es).innerHTML = "";
             });
 
@@ -48,7 +59,7 @@
         if(typeof invalidate == "function")
             this.setInvalidationFunction(invalidate);
         else
-            this.setInvalidationFunction((event, es, msg)=>{
+            this.setInvalidationFunction(function(event, es, msg){
                 event.preventDefault();
                 document.querySelector(es).innerHTML = msg;
                 return true;
@@ -62,16 +73,17 @@
     //rule:: (errorMsgDB, validate, invalidate, event, error_sel, value, expected?, fieldsObj?) -> true/false
 
     yavl.prototype.validateForm = function(event){
-        Object.values(this.fields).forEach(field=>{
+        var YAVL = this;
+        Object.values(YAVL.fields).forEach(function(field){ //always validate all fields
             const isFilled = document.querySelector(field.selector).value!=="";
             if(yavl.parseBool(field.required) || isFilled){
-                let val = document.querySelector(field.selector).value;
+                var val = document.querySelector(field.selector).value;
 
                 if(yavl.parseBool(field.required)){
                     if(!isFilled)
-                        return this.invalidate(event, field.error_selector, this.locale["required"]);
+                        return YAVL.invalidate(event, field.error_selector, YAVL.locale["required"]);
                     else
-                        this.validate(field.error_selector);
+                        YAVL.validate(field.error_selector);
                 }
 
                 if(field.rules){
@@ -79,12 +91,12 @@
                         case "int":
                             val = parseInt(val);
                             if(yavl.isNaN(val))
-                                return this.invalidate(event, field.error_selector, this.locale["NaN"]);
+                                return YAVL.invalidate(event, field.error_selector, YAVL.locale["NaN"]);
                             break;
                         case "float":
                             val = parseFloat(val);
                             if(yavl.isNaN(val))
-                                return this.invalidate(event, field.error_selector, this.locale["NaN"]);
+                                return YAVL.invalidate(event, field.error_selector, YAVL.locale["NaN"]);
                             break;
                         case "bool":
                             val = yavl.parseBool(val);
@@ -95,37 +107,42 @@
 
                     const rules = field.rules;
 
-                    const coreRules = Object.keys(this.__proto__)
-                                        .filter( key=>RegExp(`${yavl.coreBaseName}\\w+`).test(key) )
-                                        .map( key=>key.replace(`${yavl.coreBaseName}`, "") );
+                    const coreRules = Object.keys(yavl.prototype)
+                                        .filter(function(key){
+                                            return RegExp(yavl.coreBaseName + "\\w+").test(key);
+                                        }).map(function(key){
+                                            return key.replace(yavl.coreBaseName, "");
+                                        });
 
-                    const pluginRules = Object.keys(this.__proto__)
-                                          .filter( key=>RegExp(`${yavl.pluginBaseName}\\w+`).test(key) )
-                                          .map( key=>key.replace(`${yavl.pluginBaseName}`, "") );
+                    const pluginRules = Object.keys(yavl.prototype)
+                                        .filter(function(key){
+                                            return RegExp(yavl.pluginBaseName + "\\w+").test(key);
+                                        }).map(function(key){
+                                            return key.replace(yavl.pluginBaseName, "");
+                                        });
 
-                    /*for(let rule in rules)*/
-                    Object.keys(rules).some((rule)=>{
-                        if(coreRules.includes(rule))
-                            return this[`${yavl.coreBaseName}${rule}`](
-                                this.locale,
-                                this.validate.bind(this),
-                                this.invalidate.bind(this),
+                    Object.keys(rules).some(function(rule){
+                        if(coreRules.indexOf(rule) >= 0)
+                            return YAVL[yavl.coreBaseName + rule](
+                                YAVL.locale,
+                                YAVL.validate.bind(YAVL),
+                                YAVL.invalidate.bind(YAVL),
                                 event,
                                 field.error_selector,
                                 val,
                                 rules[rule],
-                                this.fields
+                                YAVL.fields
                             );
-                        else if(pluginRules.includes(rule))
-                            return this[`${yavl.pluginBaseName}${rule}`](
-                                this.locale,
-                                this.validate.bind(this),
-                                this.invalidate.bind(this),
+                        else if(pluginRules.indexOf(rule) >= 0)
+                            return YAVL[`${yavl.pluginBaseName}${rule}`](
+                                YAVL.locale,
+                                YAVL.validate.bind(YAVL),
+                                YAVL.invalidate.bind(YAVL),
                                 event,
                                 field.error_selector,
                                 val,
                                 rules[rule],
-                                this.fields
+                                YAVL.fields
                             );
                     });
                 }
@@ -149,39 +166,33 @@
     });
 
     Object.defineProperty(yavl, "isNaN", {
-        value: arg=>(arg!==arg),
+        value: function(arg){ return arg!==arg },
         enumerable: true
     });
 
     Object.defineProperty(yavl, "parseBool", {
-        value: (...param)=>{
-            if(param.length < 1)
-                throw new TypeError("Not enough parameters: got 0 expected 1");
-            else{
-                if(!param[0]) return false;
+        value: function(val){
+            const toParse = ""+val;
 
-                const toParse = ""+param[0];
+            const boolPattern = /((true|false|0|1))/i;
 
-                const boolPattern = /((true|false|0|1))/i;
+            const matches = boolPattern.exec(toParse)
 
-                const matches = boolPattern.exec(toParse)
+            const result = (matches ? matches[0] : "");
 
-                const result = (matches ? matches[0] : "");
+            switch(result){
+                case "1":
+                case "true":
+                    return true;
 
-                switch(result){
-                    case "1":
-                    case "true":
-                        return true;
+                case "0":
+                case "false":
+                    return false;
 
-                    case "0":
-                    case "false":
-                        return false;
-
-                    case "":
-                    default:
-                        return null;
-                };
-            }
+                case "":
+                default:
+                    return null;
+            };
         },
         enumerable: true
     });
@@ -231,11 +242,11 @@
     *@param {number} ex - The "expected" value (here the reference for the minimum)
     *
     */
-    yavl.prototype[`${yavl.coreBaseName}min`] = function(errorMsgDB, validate, invalidate, event, es, val, ex){
+    yavl.prototype[yavl.coreBaseName + "min"] = function(errorMsgDB, validate, invalidate, event, es, val, ex){
         if(val >= ex)
             validate(es);
         else
-            return invalidate(event, es, errorMsgDB["min"].replace("%value%", `${ex}`));
+            return invalidate(event, es, errorMsgDB["min"].replace("%value%", ex));
     }
 
     /**Rule to satisfy a maximum
@@ -250,11 +261,11 @@
     *@param {number} ex - The "expected" value (here the reference for the maximum)
     *
     */
-    yavl.prototype[`${yavl.coreBaseName}max`] = function(errorMsgDB, validate, invalidate, event, es, val, ex){
+    yavl.prototype[yavl.coreBaseName + "max"] = function(errorMsgDB, validate, invalidate, event, es, val, ex){
         if(val <= ex)
             validate(es);
         else
-            return invalidate(event, es, errorMsgDB["max"].replace("%value%", `${ex}`));
+            return invalidate(event, es, errorMsgDB["max"].replace("%value%", "" + ex));
     }
 
     /**Rule to match a specified regex
@@ -269,11 +280,11 @@
     *@param {String} ex - The regex (as a String ready to be passed to RegExp) the value must match
     *
     */
-    yavl.prototype[`${yavl.coreBaseName}regex`] = function(errorMsgDB, validate, invalidate, event, es, val, ex){
-        if(RegExp(ex).exec(`${val}`))
+    yavl.prototype[yavl.coreBaseName + "regex"] = function(errorMsgDB, validate, invalidate, event, es, val, ex){
+        if(RegExp(ex).exec("" + val))
             validate(es);
         else
-            return invalidate(event, es, errorMsgDB["nomatch_regex"].replace("%value%", `${ex}`));
+            return invalidate(event, es, errorMsgDB["nomatch_regex"].replace("%value%", "" + ex));
     }
 
     /**Rule to satisfy a minimum amount of character
@@ -288,11 +299,11 @@
     *@param {number} ex - The minimum amount of character
     *
     */
-    yavl.prototype[`${yavl.coreBaseName}minLength`] = function(errorMsgDB, validate, invalidate, event, es, val, ex){
-        if(`${val}`.length >= parseInt(ex))
+    yavl.prototype[yavl.coreBaseName + "minLength"] = function(errorMsgDB, validate, invalidate, event, es, val, ex){
+        if(("" + val).length >= parseInt(ex))
             validate(es);
         else
-            return invalidate(event, es, errorMsgDB["minLength"].replace("%value%", `${ex}`));
+            return invalidate(event, es, errorMsgDB["minLength"].replace("%value%", "" + ex));
     }
 
     /**Rule to satisfy a minimum amount of character
@@ -307,11 +318,11 @@
     *@param {number} ex - The minimum amount of character
     *
     */
-    yavl.prototype[`${yavl.coreBaseName}maxLength`] = function(errorMsgDB, validate, invalidate, event, es, val, ex){
-        if(`${val}`.length <= parseInt(ex))
+    yavl.prototype[yavl.coreBaseName + "maxLength"] = function(errorMsgDB, validate, invalidate, event, es, val, ex){
+        if(("" + val).length <= parseInt(ex))
             validate(es);
         else
-            return invalidate(event, es, errorMsgDB["maxLength"].replace("%value%", `${ex}`));
+            return invalidate(event, es, errorMsgDB["maxLength"].replace("%value%", "" + ex));
     }
 
     /**Rule to match the value of another field
@@ -327,11 +338,11 @@
     *@param {Objet} fields - An object (similar to config) containing the other fields (config like)
     *
     */
-    yavl.prototype[`${yavl.coreBaseName}match`] = function(errorMsgDB, validate, invalidate, event, es, val, ex, fields){
+    yavl.prototype[yavl.coreBaseName + "match"] = function(errorMsgDB, validate, invalidate, event, es, val, ex, fields){
         const otherNodeValue = document.querySelector(fields[ex].selector).value;
 
-        if(otherNodeValue !== `${val}`)
-            return invalidate(event, es, errorMsgDB["notEqual"].replace("%value%", `${ex}`));
+        if(otherNodeValue !== "" + val)
+            return invalidate(event, es, errorMsgDB["notEqual"].replace("%value%", "" + ex));
         else
             validate(es);
     }
@@ -347,10 +358,10 @@
             throw new TypeError("The callback MUST be a function.");
 
         //plugin:: (errMsgDB, validate, invalidate, event, error_sel, value, expected?, fieldsObj?) -> true/false
-        if( !([6, 7, 8].includes(functor.length)) )
+        if([6, 7, 8].indexOf(functor.length) < 0)
             throw new Error("The plugin's callback MUST follows this pattern : '(errMsgDB, validate, invalidate, event, error_sel, value, expected, otherFieldArr?) -> true/false'.");
 
-        yavl.prototype[`${yavl.pluginBaseName}${name}`] = functor;
+        yavl.prototype[yavl.pluginBaseName + name] = functor;
     };
 
     //Remove a rule
@@ -358,8 +369,8 @@
         if(typeof name != "string")
             throw new TypeError("The name of a plugin IS a string.");
 
-        if(`yavlPlugin_${name}` in yavl.prototype)
-            delete yavl.prototype[`${yavl.pluginBaseName}${name}`];
+        if((yavl.pluginBaseName + name) in yavl.prototype)
+            delete yavl.prototype[yavl.pluginBaseName + name];
     }
     
     
